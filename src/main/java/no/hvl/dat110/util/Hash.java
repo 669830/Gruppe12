@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 public class Hash { 
 	
 	
-	public static BigInteger hashOf(String entity) {	
+public static BigInteger hashOf(String entity) {	
 		
 		BigInteger hashint = null;
 		
@@ -30,6 +30,24 @@ public class Hash {
 		
 		// return the BigInteger
 		
+	try {
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		
+		md.update(entity.getBytes());
+		
+		byte[] digest = md.digest();
+		
+		// Convert the hash into hex format
+        String hexHash = toHex(digest);
+
+        // Convert the hex into BigInteger
+        hashint = new BigInteger(hexHash, 16);
+
+    } catch (NoSuchAlgorithmException  e) {
+        // Handle exceptions
+        e.printStackTrace();
+    }
+		
 		return hashint;
 	}
 	
@@ -42,17 +60,34 @@ public class Hash {
 		// compute the address size = 2 ^ number of bits
 		
 		// return the address size
+		BigInteger addressSize = null;
 		
-		return null;
+
+	    try {
+	    	int numberOfBits = bitSize();
+	    	
+	    	addressSize = BigInteger.valueOf(2).pow(numberOfBits);
+	    }catch(NoSuchAlgorithmException e) {
+	    	e.printStackTrace();
+	    }
+
+	    return addressSize;
 	}
 	
-	public static int bitSize() {
+	public static int bitSize()  throws NoSuchAlgorithmException{
 		
-		int digestlen = 0;
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		
+		int digestlen = md.getDigestLength();
 		
 		// find the digest length
 		
 		return digestlen*8;
+	}
+	
+	public static void main(String[] args) {
+		BigInteger result = addressSize();
+		System.out.print("Address size of MD5 hash" + result);
 	}
 	
 	public static String toHex(byte[] digest) {
